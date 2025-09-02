@@ -7,6 +7,7 @@
 @endsection
 
 @section('content')
+<div class="container-fluid">
 <div class="row">
     {{-- Total Balita --}}
     <div class="col-lg-3 col-6">
@@ -53,70 +54,145 @@
     </div>
 </div>
 
-{{-- Grafik --}}
 <div class="row">
-    <div class="col-lg-6">
-        <div class="card card-outline card-success">
-            <div class="card-header">
-                <h3 class="card-title">Distribusi Status Gizi Balita</h3>
-            </div>
-            <div class="card-body">
-                <canvas id="balitaChart" style="min-height:250px; height:250px; max-height:400px; width:100%;"></canvas>
-            </div>
-        </div>
+  <!-- Grafik 1 -->
+  <div class="col-md-6">
+    <div class="card mt-4">
+      <div class="card-header bg-info text-white">
+        <h3 class="card-title">Status Gizi Balita</h3>
+      </div>
+      <div class="card-body">
+        <canvas id="statusGiziChart" style="height:250px;"></canvas>
+      </div>
     </div>
+  </div>
+
+  <div class="row">
+  <!-- Line Chart -->
+  <div class="col-md-6">
+    <div class="card mt-4">
+      <div class="card-header bg-info text-white">
+        <h3 class="card-title">Tren Jumlah Balita 6 Bulan Terakhir</h3>
+      </div>
+      <div class="card-body">
+        <canvas id="lineChart" style="height:250px;"></canvas>
+      </div>
+    </div>
+  </div>
 </div>
+
 @endsection
 
-@section('js')
+@push('scripts')
+<!-- CDN Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('statusGiziChart').getContext('2d');
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: {!! json_encode($dataGizi->pluck('bulan')) !!},
+        datasets: [
+          {
+            label: 'Normal',
+             data: {!! json_encode($dataGizi->pluck('normal')) !!},
+            backgroundColor: 'rgba(54, 162, 235, 0.8)'
+          },
+          {
+            label: 'Wasting',
+            data: {!! json_encode($dataGizi->pluck('wasting')) !!},
+            backgroundColor: 'rgba(255, 99, 132, 0.8)'
+          },
+          {
+            label: 'Stunting',
+            data: {!! json_encode($dataGizi->pluck('stunting')) !!},
+            backgroundColor: 'rgba(255, 206, 86, 0.8)'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Distribusi Status Gizi Balita per Bulan'
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        },
+        scales: {
+          x: { stacked: true },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Jumlah Balita'
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+
+<!-- Script Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Ambil data dari backend dengan aman
-        let jumlahNormal   = @json($jumlahNormal ?? 0);
-        let jumlahWasting  = @json($jumlahWasting ?? 0);
-        let jumlahStunting = @json($jumlahStunting ?? 0);
+  const ctxLine = document.getElementById('lineChart').getContext('2d');
 
-        // Debugging data
-        console.log("=== DEBUG DATA CHART ===");
-        console.log("Jumlah Normal   :", jumlahNormal);
-        console.log("Jumlah Wasting  :", jumlahWasting);
-        console.log("Jumlah Stunting :", jumlahStunting);
-
-        // Cek canvas
-        let canvas = document.getElementById('balitaChart');
-        console.log("Canvas ditemukan? :", canvas ? "✅ Ya" : "❌ Tidak");
-
-        if (!canvas) {
-            alert("Canvas #balitaChart tidak ditemukan di HTML!");
-            return;
+  new Chart(ctxLine, {
+    type: 'line',
+    data: {
+       labels: {!! json_encode($dataGizi->pluck('bulan')) !!},
+      datasets: [
+        {
+          label: 'Jumlah Balita',
+          data: [28, 30, 32, 31, 34, 36], // contoh data
+          borderColor: 'rgba(54, 162, 235, 1)',
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          tension: 0.4, // bikin garis melengkung halus
+          fill: true,   // area di bawah garis terwarnai
+          pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+          pointRadius: 5
         }
-
-        var ctx = canvas.getContext('2d');
-
-        // Render chart
-        var balitaChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Normal', 'Wasting', 'Stunting'],
-                datasets: [{
-                    data: [jumlahNormal, jumlahWasting, jumlahStunting],
-                    backgroundColor: ['#28a745', '#dc3545', '#ffc107']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-
-        console.log("Chart berhasil di-render:", balitaChart);
-    });
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top'
+        },
+        title: {
+          display: true,
+          text: 'Grafik Perkembangan Balita'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Jumlah'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Bulan'
+          }
+        }
+      }
+    }
+  });
 </script>
-@endsection
+@endpush
+
 

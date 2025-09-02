@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Posyandu</title>
+  <title>Pandu Ciomas</title>
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
@@ -35,7 +35,7 @@
 
   <!-- Footer -->
   <footer class="main-footer text-center">
-    <strong>&copy; 2025 Posyandu.</strong> All rights reserved.
+    <strong>&copy; 2025 Pandu Ciomas.</strong> All rights reserved.
   </footer>
 </div>
 
@@ -58,7 +58,8 @@
     $('#example1').DataTable({
       responsive: true
     });
-  });
+    @stack('scripts')
 </script>
+@stack('scripts')
 </body>
 </html>

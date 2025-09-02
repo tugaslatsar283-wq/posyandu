@@ -6,6 +6,7 @@ use App\Http\Controllers\DesaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PosyanduController;
 
+
 // Halaman Welcome
 Route::get('/', function () {
     return view('welcome');
@@ -33,6 +34,8 @@ Route::middleware(['auth', 'role:operator'])->group(function () {
         'index', 'create', 'store', 'edit', 'update'
     ]);
 });
+
+
 
 // Auth scaffolding (register, login, logout)
 require __DIR__.'/auth.php';

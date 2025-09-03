@@ -5,17 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Posyandu extends Model
+class Gizi extends Model
 {
     use HasFactory;
 
+    protected $table = 'gizi';
+
     protected $fillable = [
         'desa_id',
-        'jumlah_posyandu',
-        'jumlah_kader',
+        'jumlah_balita_normal',
+        'jumlah_balita_wasting',
+        'jumlah_balita_stunting',
     ];
 
-    // Posyandu.php
+    // Gizi.php
 public function desa()
 {
     return $this->belongsTo(Desa::class, 'desa_id');

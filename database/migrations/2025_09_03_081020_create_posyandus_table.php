@@ -11,12 +11,8 @@ return new class extends Migration
         Schema::create('posyandus', function (Blueprint $table) {
             $table->id();
             $table->foreignId('desa_id')->constrained('desas')->onDelete('cascade');
-            $table->integer('jumlah_posyandu')->default(0);
-            $table->integer('jumlah_balita')->default(0);
-            $table->integer('jumlah_balita_normal')->default(0);
-            $table->integer('jumlah_balita_stunting')->default(0);
-            $table->integer('jumlah_balita_wasting')->default(0);
-            $table->integer('jumlah_kader')->default(0);
+            $table->integer('jumlah_posyandu');
+            $table->integer('jumlah_kader');
             $table->timestamps();
         });
     }

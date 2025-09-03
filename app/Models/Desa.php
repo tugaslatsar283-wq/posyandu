@@ -23,4 +23,8 @@ class Desa extends Model
     {
         return $this->hasOne(User::class)->where('role', 'operator');
     }
+    public function gizi()
+{
+    return $this->hasMany(Gizi::class);
+}
 }

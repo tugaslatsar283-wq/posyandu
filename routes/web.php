@@ -5,6 +5,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PosyanduController;
+use App\Http\Controllers\GiziController;
+use App\Http\Controllers\KaderController;
 
 
 // Halaman Welcome
@@ -35,7 +37,16 @@ Route::middleware(['auth', 'role:operator'])->group(function () {
     ]);
 });
 
+Route::post('/gizi/store', [GiziController::class, 'store'])->name('gizi.store');
+Route::post('/kader/store', [KaderController::class, 'store'])->name('kader.store');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/gizi', [GiziController::class, 'index'])->name('gizi.index');
+    Route::post('/gizi', [GiziController::class, 'store'])->name('gizi.store');
+    Route::delete('/gizi/{id}', [GiziController::class, 'destroy'])->name('gizi.destroy');
+});
+
+Route::resource('posyandu', PosyanduController::class)->only(['index','store','destroy']);
 
 // Auth scaffolding (register, login, logout)
 require __DIR__.'/auth.php';

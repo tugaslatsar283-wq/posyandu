@@ -7,22 +7,25 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Posyandu;
 use App\Models\Desa;
 use App\Models\Kader;
+use App\Models\Gizi;
+
+
 
 
 
 class DashboardController extends Controller
 {
-    public function index()
-    {
-        $jumlahBalita   = Posyandu::sum('jumlah_balita');
-        $jumlahWasting  = Posyandu::sum('jumlah_balita_wasting');
-        $jumlahStunting = Posyandu::sum('jumlah_balita_stunting');
-        $jumlahNormal   = Posyandu::sum('jumlah_balita_normal');
-        $jumlahPosyandu = Posyandu::sum('jumlah_posyandu');
-        $jumlahDesa     = Desa::count();
-        $jumlahKader    = Posyandu::sum('jumlah_kader');
+   public function index()
+{
+    
+    $jumlahWasting  = Gizi::sum('jumlah_balita_wasting');
+    $jumlahStunting = Gizi::sum('jumlah_balita_stunting');
+    $jumlahNormal   = Gizi::sum('jumlah_balita_normal');
+    $jumlahPosyandu = Posyandu::sum('jumlah_posyandu');
+    $jumlahDesa     = Desa::count();
+    $jumlahKader    = Posyandu::sum('jumlah_kader');
 
-         $dataGizi = DB::table('posyandus')
+    $dataGizi = DB::table('gizi')
         ->selectRaw("DATE_FORMAT(created_at, '%M') as bulan")
         ->selectRaw("SUM(jumlah_balita_normal) as normal")
         ->selectRaw("SUM(jumlah_balita_wasting) as wasting")
@@ -32,15 +35,20 @@ class DashboardController extends Controller
         ->limit(6)
         ->get();
 
-        return view('dashboard', compact(
-            'jumlahBalita',
-            'jumlahWasting',
-            'jumlahStunting',
-            'jumlahNormal',
-            'jumlahPosyandu',
-            'jumlahDesa',
-            'jumlahKader',
-            'dataGizi'
-        ));
-    }
+    // bikin total balita per bulan
+    $dataGizi->map(function ($item) {
+        $item->total = $item->normal + $item->wasting + $item->stunting;
+        return $item;
+    });
+
+    return view('dashboard', compact(
+        'jumlahWasting',
+        'jumlahStunting',
+        'jumlahNormal',
+        'jumlahPosyandu',
+        'jumlahDesa',
+        'jumlahKader',
+        'dataGizi'
+    ));
+}
 }

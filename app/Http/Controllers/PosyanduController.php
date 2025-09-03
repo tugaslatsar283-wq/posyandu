@@ -2,51 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Posyandu;
-use App\Models\Desa;
-use App\Models\Gizi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Posyandu;
+use App\Models\Gizi;
 
 class PosyanduController extends Controller
 {
-    /**
-     * Tampilkan daftar posyandu
-     */
     public function index()
-{
-    $dataPosyandu = Posyandu::all();
-    $dataGizi     = Gizi::with('desa')->get();
+    {
+        // Ambil desa_id dari user yang login
+        $desaId = Auth::user()->desa_id;
 
-    return view('posyandu.index', compact('dataPosyandu', 'dataGizi'));
-}
+        // Filter data sesuai desa_id
+        $dataPosyandu = Posyandu::where('desa_id', $desaId)->get();
+        $dataGizi     = Gizi::where('desa_id', $desaId)->get();
 
-    /**
-     * Simpan data baru
-     */
+        return view('posyandu.index', compact('dataPosyandu', 'dataGizi'));
+    }
+
     public function store(Request $request)
-{
-    $request->validate([
-        'jumlah_posyandu' => 'required|integer',
-        'jumlah_kader' => 'required|integer',
-    ]);
+    {
+        Posyandu::create([
+            'desa_id' => Auth::user()->desa_id,
+            'jumlah_posyandu' => $request->jumlah_posyandu,
+            'jumlah_kader'    => $request->jumlah_kader,
+        ]);
 
-    Posyandu::create([
-        'desa_id' => auth()->user()->desa_id, // otomatis ambil dari user
-        'jumlah_posyandu' => $request->jumlah_posyandu,
-        'jumlah_kader' => $request->jumlah_kader,
-    ]);
+        return redirect()->route('posyandu.index')->with('success', 'Data Posyandu berhasil ditambahkan!');
+    }
 
-    return redirect()->back()->with('success', 'Data posyandu berhasil ditambahkan');
-}
-    /**
-     * Hapus data
-     */
     public function destroy($id)
     {
         $posyandu = Posyandu::findOrFail($id);
         $posyandu->delete();
 
-        return redirect()->route('posyandu.index')->with('success', 'Data Posyandu berhasil dihapus.');
+        return redirect()->route('posyandu.index')->with('success', 'Data Posyandu berhasil dihapus!');
     }
 }

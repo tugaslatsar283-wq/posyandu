@@ -3,17 +3,17 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class RoleMiddleware
 {
-    public function handle($request, Closure $next, ...$roles)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!Auth::check()) {
+        if (!auth()->check()) {
             return redirect('/login');
         }
 
-        if (!in_array(Auth::user()->role, $roles)) {
+        if (!in_array(auth()->user()->role, $roles)) {
             abort(403, 'Anda tidak punya akses ke halaman ini.');
         }
 

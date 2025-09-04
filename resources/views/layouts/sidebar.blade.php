@@ -69,6 +69,16 @@
         </li>
         @endif
 
+        {{-- Admin Kecamatan --}}
+@if(auth()->check() && auth()->user()->role === 'admin')
+<li class="nav-item">
+  <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}">
+    <i class="nav-icon fas fa-tachometer-alt"></i>
+    <p>Dashboard Admin</p>
+  </a>
+</li>
+@endif
+
       </ul>
     </nav>
   </div>

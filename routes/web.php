@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PosyanduController;
 use App\Http\Controllers\GiziController;
 use App\Http\Controllers\KaderController;
+use App\Http\Controllers\AdminDashboardController;
 
 
 // Halaman Welcome
@@ -47,6 +48,11 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::resource('posyandu', PosyanduController::class)->only(['index','store','destroy']);
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
+        ->name('admin.dashboard');
+});
 
 // Auth scaffolding (register, login, logout)
 require __DIR__.'/auth.php';

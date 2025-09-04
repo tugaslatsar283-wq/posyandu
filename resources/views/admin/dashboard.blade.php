@@ -2,26 +2,36 @@
 
 @section('content')
 <div class="container-fluid">
-    <h4 class="mb-3">Rekap Data Posyandu per Desa</h4>
+    <h4 class="mb-4">Rekap Data Posyandu per Desa</h4>
 
-    <!-- Filter Bulan -->
-    <form method="GET" action="{{ route('admin.dashboard') }}" class="mb-3">
-        <div class="row">
+    <form method="GET" action="{{ route('admin.dashboard') }}">
+        <div class="row g-3 align-items-end">
+            <!-- Filter bulan -->
             <div class="col-md-3">
-                <input type="month" name="bulan" class="form-control" 
+                <label for="bulan" class="form-label">Pilih Bulan</label>
+                <input type="month" name="bulan" id="bulan"
+                       class="form-control"
                        value="{{ request('bulan', now()->format('Y-m')) }}">
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary">Filter</button>
+
+            <!-- Tombol Filter + Print -->
+            <div class="col-md-6 d-flex align-items-center">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+
+                <a href="{{ route('admin.dashboard.print', ['bulan' => request('bulan', now()->format('Y-m'))]) }}"
+                   class="btn btn-danger" target="_blank">
+                    <i class="fas fa-file-pdf"></i> Print PDF
+                </a>
             </div>
         </div>
     </form>
 
-    <!-- Tabel Rekap -->
-    <div class="card">
+    <div class="card mt-4">
         <div class="card-body p-0">
-            <table class="table table-bordered table-striped mb-0">
-                <thead class="thead-dark">
+            <table class="table table-striped table-bordered mb-0">
+                <thead class="table-dark text-center">
                     <tr>
                         <th>Nama Desa</th>
                         <th>Jumlah Posyandu</th>
@@ -33,20 +43,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($rekap as $row)
-                    <tr>
-                        <td>{{ $row->nama_desa }}</td>
-                        <td>{{ $row->jumlah_posyandu }}</td>
-                        <td>{{ $row->jumlah_kader }}</td>
-                        <td>{{ $row->balita_normal }}</td>
-                        <td>{{ $row->wasting }}</td>
-                        <td>{{ $row->stunting }}</td>
-                        <td>{{ $row->total_balita }}</td>
-                    </tr>
+                    @forelse($rekap as $data)
+                        <tr class="text-center">
+                            <td class="text-start">{{ $data->nama_desa }}</td>
+                            <td>{{ $data->jumlah_posyandu }}</td>
+                            <td>{{ $data->jumlah_kader }}</td>
+                            <td>{{ $data->balita_normal }}</td>
+                            <td>{{ $data->wasting }}</td>
+                            <td>{{ $data->stunting }}</td>
+                            <td>{{ $data->total_balita }}</td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="7" class="text-center">Tidak ada data</td>
-                    </tr>
+                        <tr>
+                            <td colspan="7" class="text-center">Tidak ada data</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Desa;
 use App\Models\Posyandu;
 use App\Models\Gizi;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminDashboardController extends Controller
 {
@@ -70,6 +71,8 @@ class AdminDashboardController extends Controller
         ->groupBy('desas.id', 'desas.nama_desa')
         ->get();
 
+        $pdf = Pdf::loadView('admin.laporan_pdf', compact('rekap', 'bulan'));
+
         return view('admin.dashboard', compact(
             'jumlahDesa',
             'jumlahPosyandu',
@@ -82,4 +85,33 @@ class AdminDashboardController extends Controller
             'bulan'
         ));
     }
+
+    public function print(Request $request)
+{
+    $bulan = $request->bulan ?? now()->format('Y-m');
+
+$rekap = DB::table('desas')
+    ->leftJoin('posyandus', 'desas.id', '=', 'posyandus.desa_id')
+    ->leftJoin('gizi', function ($join) use ($bulan) {
+        // join ke gizi berdasarkan desa_id
+        $join->on('desas.id', '=', 'gizi.desa_id')
+             ->whereRaw("DATE_FORMAT(gizi.created_at, '%Y-%m') = ?", [$bulan]);
+    })
+    ->select(
+        'desas.nama_desa',
+        DB::raw('COUNT(DISTINCT posyandus.id) as jumlah_posyandu'),
+        DB::raw('COALESCE(SUM(posyandus.jumlah_kader), 0) as jumlah_kader'),
+        DB::raw('COALESCE(SUM(gizi.jumlah_balita_normal), 0) as balita_normal'),
+        DB::raw('COALESCE(SUM(gizi.jumlah_balita_wasting), 0) as wasting'),
+        DB::raw('COALESCE(SUM(gizi.jumlah_balita_stunting), 0) as stunting'),
+        DB::raw('COALESCE(SUM(gizi.jumlah_balita_normal + gizi.jumlah_balita_wasting + gizi.jumlah_balita_stunting), 0) as total_balita')
+    )
+    ->groupBy('desas.id', 'desas.nama_desa')
+    ->get();
+
+    $pdf = Pdf::loadView('admin.laporan_pdf', compact('rekap', 'bulan'))
+        ->setPaper('a4', 'landscape');
+
+    return $pdf->download("Laporan-Posyandu-$bulan.pdf");
+}
 }

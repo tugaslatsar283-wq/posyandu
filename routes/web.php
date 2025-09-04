@@ -54,5 +54,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('admin.dashboard');
 });
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/laporan', [AdminDashboardController::class, 'laporan'])
+        ->name('admin.laporan');
+});
+
+// routes/web.php
+Route::middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/dashboard/print', [AdminDashboardController::class, 'print'])->name('admin.dashboard.print');
+});
 // Auth scaffolding (register, login, logout)
 require __DIR__.'/auth.php';

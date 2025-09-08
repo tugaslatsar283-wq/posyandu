@@ -9,17 +9,24 @@ use App\Models\Gizi;
 
 class PosyanduController extends Controller
 {
-    public function index()
-    {
-        // Ambil desa_id dari user yang login
-        $desaId = Auth::user()->desa_id;
+    public function index(Request $request)
+{
+    $queryGizi = Gizi::where('desa_id', auth()->user()->desa_id);
 
-        // Filter data sesuai desa_id
-        $dataPosyandu = Posyandu::where('desa_id', $desaId)->get();
-        $dataGizi     = Gizi::where('desa_id', $desaId)->get();
+    if ($request->filled('bulan')) {
+        $bulan = $request->bulan; // format YYYY-MM
+        [$tahun, $bln] = explode('-', $bulan);
 
-        return view('posyandu.index', compact('dataPosyandu', 'dataGizi'));
+        $queryGizi->whereYear('created_at', $tahun)
+                  ->whereMonth('created_at', $bln);
     }
+
+    $dataGizi = $queryGizi->get();
+
+    $dataPosyandu = Posyandu::where('desa_id', auth()->user()->desa_id)->get();
+
+    return view('posyandu.index', compact('dataPosyandu', 'dataGizi'));
+}
 
     public function store(Request $request)
     {

@@ -35,12 +35,7 @@
             <p>Data Desa</p>
           </a>
         </li>
-        <li class="nav-item">
-          <a href="{{ url('/posyandu') }}" class="nav-link">
-            <i class="nav-icon fas fa-hospital"></i>
-            <p>Data Posyandu</p>
-          </a>
-        </li>
+        
         @endif
 
         {{-- Admin Kecamatan --}}
@@ -51,12 +46,7 @@
             <p>Data Desa</p>
           </a>
         </li>
-        <li class="nav-item">
-          <a href="{{ url('/posyandu') }}" class="nav-link">
-            <i class="nav-icon fas fa-hospital"></i>
-            <p>Data Posyandu</p>
-          </a>
-        </li>
+        
         @endif
 
         {{-- Operator Desa --}}

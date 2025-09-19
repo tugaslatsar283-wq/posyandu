@@ -64,5 +64,12 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/dashboard/print', [AdminDashboardController::class, 'print'])->name('admin.dashboard.print');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('posyandu', App\Http\Controllers\PosyanduController::class);
+    Route::post('/gizi', [GiziController::class, 'store'])->name('gizi.store');
+    Route::put('/gizi/{id}', [GiziController::class, 'update'])->name('gizi.update');
+    Route::delete('/gizi/{id}', [GiziController::class, 'destroy'])->name('gizi.destroy');
+});
 // Auth scaffolding (register, login, logout)
 require __DIR__.'/auth.php';

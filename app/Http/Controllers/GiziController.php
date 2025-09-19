@@ -27,4 +27,22 @@ class GiziController extends Controller
 
         return redirect()->route('posyandu.index')->with('success', 'Data Gizi berhasil dihapus!');
     }
+
+   public function update(Request $request, $id)
+{
+    $request->validate([
+        'jumlah_balita_normal' => 'required|integer|min:0',
+        'jumlah_balita_wasting' => 'required|integer|min:0',
+        'jumlah_balita_stunting' => 'required|integer|min:0',
+    ]);
+
+    $gizi = Gizi::findOrFail($id);
+    $gizi->update($request->only([
+        'jumlah_balita_normal',
+        'jumlah_balita_wasting',
+        'jumlah_balita_stunting'
+    ]));
+
+    return redirect()->back()->with('success', 'Data gizi berhasil diperbarui');
+}
 }

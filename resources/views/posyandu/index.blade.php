@@ -43,6 +43,7 @@
                         <td>{{ $posyandu->jumlah_kader }}</td>
                         <td>{{ $posyandu->created_at->format('d/m/Y') }}</td>
                         <td>
+
                             <form action="{{ route('posyandu.destroy', $posyandu->id) }}" method="POST" onsubmit="return confirm('Yakin hapus data?')">
                                 @csrf
                                 @method('DELETE')
@@ -112,6 +113,8 @@
                         <td>{{ $gizi->jumlah_balita_normal + $gizi->jumlah_balita_wasting + $gizi->jumlah_balita_stunting }}</td>
                         <td>{{ $gizi->created_at->format('d/m/Y') }}</td>
                         <td>
+
+                        
                             <form action="{{ route('gizi.destroy', $gizi->id) }}" method="POST" onsubmit="return confirm('Yakin hapus data?')">
                                 @csrf
                                 @method('DELETE')
@@ -130,8 +133,6 @@
         </table>
     </div>
 </div>
-
-
 
 
 {{-- Modal Posyandu --}}
@@ -191,4 +192,5 @@
     </form>
   </div>
 </div>
+
 @endsection

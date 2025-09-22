@@ -27,4 +27,9 @@ class Desa extends Model
 {
     return $this->hasMany(Gizi::class);
 }
+
+public function balita()
+    {
+        return $this->hasMany(KeteranganBalita::class);
+    }
 }

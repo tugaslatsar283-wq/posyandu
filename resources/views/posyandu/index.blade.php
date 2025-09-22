@@ -99,6 +99,7 @@
                     <th>Wasting</th>
                     <th>Stunting</th>
                     <th>Total Balita</th>
+                     <th>Keterangan</th>
                     <th>Tanggal Input</th>
                     <th style="width: 100px;">Aksi</th>
                 </tr>
@@ -111,7 +112,11 @@
                         <td>{{ $gizi->jumlah_balita_wasting }}</td>
                         <td>{{ $gizi->jumlah_balita_stunting }}</td>
                         <td>{{ $gizi->jumlah_balita_normal + $gizi->jumlah_balita_wasting + $gizi->jumlah_balita_stunting }}</td>
-                        <td>{{ $gizi->created_at->format('d/m/Y') }}</td>
+                        <td><a href="{{ route('keterangan_balita.index', $gizi->id) }}" class="btn btn-sm btn-info">
+        Keterangan
+    </a>
+                    </a></td>
+                         <td>{{ $gizi->created_at->format('d/m/Y') }}</td>
                         <td>
 
                         

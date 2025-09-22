@@ -8,6 +8,8 @@ use App\Models\Posyandu;
 use App\Models\Desa;
 use App\Models\Kader;
 use App\Models\Gizi;
+use Carbon\Carbon;
+
 
 
 
@@ -41,6 +43,10 @@ class DashboardController extends Controller
         return $item;
     });
 
+    $bulanOptions = collect(range(0, 5))->map(function ($i) {
+        return Carbon::now()->subMonths($i)->format('Y-m');
+    })->reverse()->values();
+
     return view('dashboard', compact(
         'jumlahWasting',
         'jumlahStunting',
@@ -48,7 +54,38 @@ class DashboardController extends Controller
         'jumlahPosyandu',
         'jumlahDesa',
         'jumlahKader',
-        'dataGizi'
+        'dataGizi',
+        'bulanOptions'
     ));
 }
+
+public function giziChartDataAllDesa(Request $request)
+{
+    $bulan = $request->get('bulan', 'all');
+
+    $query = DB::table('gizi')
+        ->join('desas', 'gizi.desa_id', '=', 'desas.id')
+        ->select(
+            'desas.nama_desa as desa',
+            DB::raw('SUM(gizi.jumlah_balita_stunting) as stunting'),
+            DB::raw('SUM(gizi.jumlah_balita_wasting) as wasting')
+        )
+        ->groupBy('desas.nama_desa');
+
+    if ($bulan !== 'all') {
+        // parse bulan format: YYYY-MM
+        try {
+            $carbonDate = \Carbon\Carbon::createFromFormat('Y-m', $bulan);
+            $query->whereMonth('gizi.created_at', $carbonDate->month)
+                  ->whereYear('gizi.created_at', $carbonDate->year);
+        } catch (\Exception $e) {
+            // kalau format salah, biarkan query tanpa filter
+        }
+    }
+
+    $data = $query->get();
+
+    return response()->json($data);
+}
+
 }

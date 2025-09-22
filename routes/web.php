@@ -8,6 +8,8 @@ use App\Http\Controllers\PosyanduController;
 use App\Http\Controllers\GiziController;
 use App\Http\Controllers\KaderController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\KeteranganBalitaController;
+
 
 
 // Halaman Welcome
@@ -71,5 +73,12 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/gizi/{id}', [GiziController::class, 'update'])->name('gizi.update');
     Route::delete('/gizi/{id}', [GiziController::class, 'destroy'])->name('gizi.destroy');
 });
+
+Route::get(
+    '/gizi/chart-data-all-desa',
+    [DashboardController::class, 'giziChartDataAllDesa']
+)->name('gizi.chartDataAllDesa');
+
+Route::get('/keterangan-balita/{gizi_id}', [KeteranganBalitaController::class, 'index'])->name('keterangan_balita.index');
 // Auth scaffolding (register, login, logout)
 require __DIR__.'/auth.php';

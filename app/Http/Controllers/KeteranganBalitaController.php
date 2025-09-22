@@ -2,56 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\KeteranganBalita;
-use App\Models\Desa;
 use Illuminate\Http\Request;
+use App\Models\KeteranganBalita;
+use App\Models\Gizi;
 use Illuminate\Support\Facades\Auth;
 
 class KeteranganBalitaController extends Controller
 {
-  public function index($gizi_id)
-{
-    $user = Auth::user();
-
-    $data = KeteranganBalita::with('desa')
-        ->where('desa_id', $user->desa_id)
-        ->where('gizi_id', $gizi_id)
-        ->get();
-
-    $gizi = Gizi::findOrFail($gizi_id);
-
-    return view('keterangan_balita.index', compact('data', 'gizi'));
-}
-
-    public function create()
+    // Tampilkan semua keterangan yang terhubung ke gizi_id tertentu
+    public function index($giziId)
     {
-        $desas = Desa::all();
-        return view('keterangan_balita.create', compact('desas'));
+        $gizi = Gizi::findOrFail($giziId); // kalau tidak ada 404
+        // ambil semua keterangan untuk gizi ini
+        $data = KeteranganBalita::where('gizi_id', $giziId)->orderBy('created_at', 'desc')->get();
+
+        // tampilkan view dan kirim gizi & data nya
+        return view('keterangan_balita.index', [
+            'gizi' => $gizi,
+            'data' => $data,
+            'gizi_id' => $giziId
+        ]);
     }
 
-     public function store(Request $request)
+    // Simpan keterangan baru (form mengirim gizi_id)
+    public function store(Request $request)
     {
-        $request->validate([
-            'nama_balita' => 'required',
-            'usia' => 'required|integer',
-            'alamat' => 'required',
+        $validated = $request->validate([
+            'nama_balita' => 'required|string|max:191',
+            'usia' => 'required|integer|min:0',
+            'alamat' => 'required|string|max:500',
             'status' => 'required|in:Normal,Stunting,Wasting',
+            'gizi_id' => 'required|exists:gizi,id',
         ]);
+
+        // desa diambil dari user yang login supaya otomatis
+        $desaId = Auth::user()->desa_id ?? null;
 
         KeteranganBalita::create([
-            'desa_id' => Auth::user()->desa_id,
-            'nama_balita' => $request->nama_balita,
-            'usia' => $request->usia,
-            'alamat' => $request->alamat,
-            'status' => $request->status,
+            'nama_balita' => $validated['nama_balita'],
+            'usia' => $validated['usia'],
+            'alamat' => $validated['alamat'],
+            'status' => $validated['status'],
+            'gizi_id' => $validated['gizi_id'],
+            'desa_id' => $desaId,
         ]);
 
-        return redirect()->route('keterangan_balita.index')->with('success', 'Data berhasil ditambahkan');
+        return redirect()->route('keterangan_balita.index', $validated['gizi_id'])
+                         ->with('success', 'Keterangan balita berhasil ditambahkan.');
     }
-public function destroy($id)
+
+    public function destroy($id)
     {
-        $balita = KeteranganBalita::findOrFail($id);
-        $balita->delete();
-        return redirect()->route('keterangan_balita.index')->with('success', 'Data berhasil dihapus');
+        $row = KeteranganBalita::findOrFail($id);
+        $giziId = $row->gizi_id;
+        $row->delete();
+
+        return redirect()->route('keterangan_balita.index', $giziId)
+                         ->with('success', 'Data berhasil dihapus.');
     }
 }

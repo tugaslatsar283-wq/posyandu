@@ -81,4 +81,19 @@ Route::get(
 
 Route::get('/keterangan-balita/{gizi_id}', [KeteranganBalitaController::class, 'index'])->name('keterangan_balita.index');
 // Auth scaffolding (register, login, logout)
+
+Route::get('/keterangan-balita/{gizi}', [KeteranganController::class, 'create'])->name('keterangan_balita.create');
+Route::post('/keterangan-balita/{gizi}', [KeteranganController::class, 'store'])->name('keterangan_balita.store');
+
+Route::get('keterangan-balita/{gizi}', [KeteranganBalitaController::class, 'index'])
+    ->name('keterangan_balita.index')
+    ->middleware('auth');
+
+Route::post('keterangan-balita', [KeteranganBalitaController::class, 'store'])
+    ->name('keterangan_balita.store')
+    ->middleware('auth');
+
+Route::delete('keterangan-balita/{id}', [KeteranganBalitaController::class, 'destroy'])
+    ->name('keterangan_balita.destroy')
+    ->middleware('auth');
 require __DIR__.'/auth.php';

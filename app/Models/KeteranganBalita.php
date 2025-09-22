@@ -9,9 +9,10 @@ class KeteranganBalita extends Model
 {
     use HasFactory;
 
-    protected $table = 'keterangan_balita';
+    protected $table = 'keterangan_balita'; // sesuaikan nama tabel
 
     protected $fillable = [
+        'gizi_id',
         'desa_id',
         'nama_balita',
         'usia',
@@ -19,9 +20,13 @@ class KeteranganBalita extends Model
         'status',
     ];
 
+    public function gizi()
+    {
+        return $this->belongsTo(\App\Models\Gizi::class);
+    }
+
     public function desa()
     {
-        return $this->belongsTo(Desa::class, 'desa_id');
+        return $this->belongsTo(\App\Models\Desa::class);
     }
 }
-

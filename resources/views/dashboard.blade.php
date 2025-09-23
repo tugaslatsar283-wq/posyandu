@@ -25,7 +25,7 @@
           <div class="small-box bg-warning">
               <div class="inner">
                   <h3>{{ $jumlahDesa ?? 0 }}</h3>
-                  <p>Jumlah Desa</p>
+                  <p>Jumlah Desa/Kelurahan</p>
               </div>
               <div class="icon"><i class="fas fa-map-marked-alt"></i></div>
           </div>

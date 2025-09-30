@@ -60,4 +60,27 @@ class KeteranganBalitaController extends Controller
         return redirect()->route('keterangan_balita.index', $giziId)
                          ->with('success', 'Data berhasil dihapus.');
     }
+
+    public function adminIndex($desaId, $bulan = null)
+    {
+        $query = DB::table('keterangan_balita')
+            ->join('desas', 'desas.id', '=', 'keterangan_balita.desa_id')
+            ->select(
+                'keterangan_balita.id',
+                'keterangan_balita.gizi_id',
+                'keterangan_balita.nama_balita',
+                'keterangan_balita.alamat',
+                'keterangan_balita.status',
+                'desas.nama_desa'
+            )
+            ->where('keterangan_balita.desa_id', $desaId);
+
+        if ($bulan) {
+            $query->whereRaw("DATE_FORMAT(keterangan_balita.created_at, '%Y-%m') = ?", [$bulan]);
+        }
+
+        $data = $query->get();
+
+        return view('admin.keterangan_balita.index', compact('data', 'bulan'));
+    }
 }

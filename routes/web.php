@@ -96,4 +96,7 @@ Route::post('keterangan-balita', [KeteranganBalitaController::class, 'store'])
 Route::delete('keterangan-balita/{id}', [KeteranganBalitaController::class, 'destroy'])
     ->name('keterangan_balita.destroy')
     ->middleware('auth');
+
+    Route::get('/admin/keterangan-balita/{desa}/{bulan?}', [KeteranganBalitaController::class, 'adminIndex'])
+    ->name('admin.keterangan_balita.index');
 require __DIR__.'/auth.php';

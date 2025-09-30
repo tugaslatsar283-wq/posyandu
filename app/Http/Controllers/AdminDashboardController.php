@@ -56,20 +56,27 @@ class AdminDashboardController extends Controller
      $bulan = $request->input('bulan', now()->format('Y-m'));
 
     $rekap = DB::table('desas')
-        ->leftJoin('posyandus', 'desas.id', '=', 'posyandus.desa_id')
-        ->leftJoin('gizi', 'desas.id', '=', 'gizi.desa_id')
-        ->select(
-            'desas.nama_desa',
-            DB::raw('COUNT(DISTINCT posyandus.id) as jumlah_posyandu'),
-            DB::raw('SUM(posyandus.jumlah_kader) as jumlah_kader'),
-            DB::raw('SUM(gizi.jumlah_balita_normal) as balita_normal'),
-            DB::raw('SUM(gizi.jumlah_balita_wasting) as wasting'),
-            DB::raw('SUM(gizi.jumlah_balita_stunting) as stunting'),
-            DB::raw('(SUM(gizi.jumlah_balita_normal) + SUM(gizi.jumlah_balita_wasting) + SUM(gizi.jumlah_balita_stunting)) as total_balita')
-        )
-        ->whereRaw("DATE_FORMAT(gizi.created_at, '%Y-%m') = ?", [$bulan])
-        ->groupBy('desas.id', 'desas.nama_desa')
-        ->get();
+    ->leftJoin('posyandus', 'posyandus.desa_id', '=', 'desas.id')
+    ->leftJoin('gizi', 'gizi.desa_id', '=', 'desas.id')
+    ->select(
+        'desas.id',
+        'desas.nama_desa',
+        DB::raw('SUM(posyandus.jumlah_posyandu) as jumlah_posyandu'),
+        DB::raw('SUM(posyandus.jumlah_kader) as jumlah_kader'),
+        DB::raw('SUM(gizi.jumlah_balita_normal) as balita_normal'),
+        DB::raw('SUM(gizi.jumlah_balita_wasting) as balita_wasting'),
+        DB::raw('SUM(gizi.jumlah_balita_stunting) as balita_stunting'),
+        DB::raw('(
+            SUM(gizi.jumlah_balita_normal) + 
+            SUM(gizi.jumlah_balita_wasting) + 
+            SUM(gizi.jumlah_balita_stunting)
+        ) as total_balita')
+    )
+    ->when($bulan, function ($query, $bulan) {
+        return $query->whereRaw("DATE_FORMAT(gizi.created_at, '%Y-%m') = ?", [$bulan]);
+    })
+    ->groupBy('desas.id', 'desas.nama_desa')
+    ->get();
 
         $pdf = Pdf::loadView('admin.laporan_pdf', compact('rekap', 'bulan'));
 

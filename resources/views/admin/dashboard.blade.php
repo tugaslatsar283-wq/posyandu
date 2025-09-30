@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <h4 class="mb-4">Rekap Data Posyandu per Desa</h4>
+    <h4 class="mb-4">Rekap Data Posyandu Kecamatan</h4>
 
     <form method="GET" action="{{ route('admin.dashboard') }}">
         <div class="row g-3 align-items-end">
@@ -40,18 +40,24 @@
                         <th>Wasting</th>
                         <th>Stunting</th>
                         <th>Total Balita</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($rekap as $data)
+                    @forelse($rekap as $desa)
                         <tr class="text-center">
-                            <td class="text-start">{{ $data->nama_desa }}</td>
-                            <td>{{ $data->jumlah_posyandu }}</td>
-                            <td>{{ $data->jumlah_kader }}</td>
-                            <td>{{ $data->balita_normal }}</td>
-                            <td>{{ $data->wasting }}</td>
-                            <td>{{ $data->stunting }}</td>
-                            <td>{{ $data->total_balita }}</td>
+                            <td class="text-start">{{ $desa->nama_desa }}</td>
+                            <td>{{ $desa->jumlah_posyandu }}</td>
+                            <td>{{ $desa->jumlah_kader }}</td>
+                            <td>{{ $desa->balita_normal }}</td>
+                            <td> {{ $desa->balita_wasting }}</td>
+                            <td>{{ $desa->balita_stunting }}</td>
+                            <td>{{ $desa->total_balita }}</td>
+                            <td><a href="{{ route('admin.keterangan_balita.index', [$desa->id, request('bulan')]) }}" 
+                       class="btn btn-sm btn-info">
+                        Keterangan
+                    </a>
+</td>
                         </tr>
                     @empty
                         <tr>

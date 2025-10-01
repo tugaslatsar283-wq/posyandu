@@ -106,7 +106,7 @@ $rekap = DB::table('desas')
     })
     ->select(
         'desas.nama_desa',
-        DB::raw('COUNT(DISTINCT posyandus.id) as jumlah_posyandu'),
+        DB::raw('SUM(DISTINCT posyandus.jumlah_posyandu) as jumlah_posyandu'),
         DB::raw('COALESCE(SUM(posyandus.jumlah_kader), 0) as jumlah_kader'),
         DB::raw('COALESCE(SUM(gizi.jumlah_balita_normal), 0) as balita_normal'),
         DB::raw('COALESCE(SUM(gizi.jumlah_balita_wasting), 0) as wasting'),

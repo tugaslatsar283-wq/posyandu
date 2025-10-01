@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\KeteranganBalita;
 use App\Models\Gizi;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class KeteranganBalitaController extends Controller
 {
@@ -81,6 +82,6 @@ class KeteranganBalitaController extends Controller
 
         $data = $query->get();
 
-        return view('admin.keterangan_balita.index', compact('data', 'bulan'));
+        return view('admin.keterangan', compact('data', 'bulan'));
     }
 }

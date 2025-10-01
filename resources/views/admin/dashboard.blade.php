@@ -53,10 +53,10 @@
                             <td> {{ $desa->balita_wasting }}</td>
                             <td>{{ $desa->balita_stunting }}</td>
                             <td>{{ $desa->total_balita }}</td>
-                            <td><a href="{{ route('admin.keterangan_balita.index', [$desa->id, request('bulan')]) }}" 
-                       class="btn btn-sm btn-info">
-                        Keterangan
-                    </a>
+                            <td> <a href="{{ route('admin.keterangan_balita.index', [$desa->id, request('bulan')]) }}" 
+       class="btn btn-sm btn-info">
+        Keterangan Balita
+    </a>
 </td>
                         </tr>
                     @empty

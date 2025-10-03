@@ -40,9 +40,9 @@ class GiziController extends Controller
     $gizi->update($request->only([
         'jumlah_balita_normal',
         'jumlah_balita_wasting',
-        'jumlah_balita_stunting'
+        'jumlah_balita_stunting',
     ]));
 
-    return redirect()->back()->with('success', 'Data gizi berhasil diperbarui');
+    return redirect()->back()->with('success', 'Data gizi berhasil diperbarui.');
 }
 }

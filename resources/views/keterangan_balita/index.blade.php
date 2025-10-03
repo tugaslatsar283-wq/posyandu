@@ -51,11 +51,23 @@
                             </td>
                             <td>{{ $balita->desa->nama_desa ?? '-' }}</td>
                             <td>
-                                <form action="{{ route('keterangan_balita.destroy', $balita->id) }}" method="POST" onsubmit="return confirm('Hapus data ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button>
-                                </form>
+
+                            <button class="btn btn-warning btn-sm me-1" 
+            data-bs-toggle="modal" 
+            data-bs-target="#editBalitaModal{{ $balita->id }}">
+        <i class="fas fa-edit"></i>Edit
+    </button>
+
+    <form action="{{ route('keterangan_balita.destroy', $balita->id) }}" 
+          method="POST" 
+          class="d-inline" 
+          onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+        @csrf
+        @method('DELETE')
+        <button class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i> Hapus</button>
+    </form>
+
                             </td>
                         </tr>
                     @empty
@@ -114,3 +126,52 @@
 </div>
 
 @endsection
+
+@foreach($data as $balita)
+<div class="modal fade" id="editBalitaModal{{ $balita->id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="{{ route('keterangan_balita.update', $balita->id) }}" method="POST" class="modal-content">
+      @csrf
+      @method('PUT')
+
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Keterangan Balita</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+          <div class="mb-3">
+              <label class="form-label">Nama Balita</label>
+              <input type="text" name="nama_balita" class="form-control" 
+                     value="{{ $balita->nama_balita }}" required>
+          </div>
+
+          <div class="mb-3">
+              <label class="form-label">Usia (bulan)</label>
+              <input type="number" name="usia" class="form-control" 
+                     value="{{ $balita->usia }}" required>
+          </div>
+
+          <div class="mb-3">
+              <label class="form-label">Alamat</label>
+              <textarea name="alamat" class="form-control" rows="2" required>{{ $balita->alamat }}</textarea>
+          </div>
+
+          <div class="mb-3">
+              <label class="form-label">Status</label>
+              <select name="status" class="form-select" required>
+                  <option value="Normal" {{ $balita->status == 'Normal' ? 'selected' : '' }}>Normal</option>
+                  <option value="Stunting" {{ $balita->status == 'Stunting' ? 'selected' : '' }}>Stunting</option>
+                  <option value="Wasting" {{ $balita->status == 'Wasting' ? 'selected' : '' }}>Wasting</option>
+              </select>
+          </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-success">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+@endforeach

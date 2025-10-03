@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-    <h3 style="text-align: center;">Laporan Rekap Data Posyandu per Desa</h3>
+    <h3 style="text-align: center;">Laporan Rekap Data Posyandu Kecamatan Ciomas</h3>
     <p style="text-align: center;">Bulan: {{ \Carbon\Carbon::parse($bulan.'-01')->translatedFormat('F Y') }}</p>
 
     <table>

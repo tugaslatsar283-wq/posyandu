@@ -12,18 +12,24 @@ class KeteranganBalitaController extends Controller
 {
     // Tampilkan semua keterangan yang terhubung ke gizi_id tertentu
     public function index($giziId)
-    {
-        $gizi = Gizi::findOrFail($giziId); // kalau tidak ada 404
-        // ambil semua keterangan untuk gizi ini
-        $data = KeteranganBalita::where('gizi_id', $giziId)->orderBy('created_at', 'desc')->get();
+{
+    $gizi = Gizi::findOrFail($giziId);
 
-        // tampilkan view dan kirim gizi & data nya
-        return view('keterangan_balita.index', [
-            'gizi' => $gizi,
-            'data' => $data,
-            'gizi_id' => $giziId
-        ]);
-    }
+    // ambil desa_id dari user yang login
+    $desaId = auth()->user()->desa_id;
+
+    // ambil data keterangan balita sesuai gizi_id DAN desa_id login
+    $data = KeteranganBalita::where('gizi_id', $giziId)
+                ->where('desa_id', $desaId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+    return view('keterangan_balita.index', [
+        'gizi' => $gizi,
+        'data' => $data,
+        'gizi_id' => $giziId
+    ]);
+}
 
     // Simpan keterangan baru (form mengirim gizi_id)
     public function store(Request $request)
@@ -84,4 +90,32 @@ class KeteranganBalitaController extends Controller
 
         return view('admin.keterangan', compact('data', 'bulan'));
     }
+
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'nama_balita' => 'required|string|max:255',
+        'usia' => 'required|integer|min:0',
+        'alamat' => 'required|string',
+        'status' => 'required|in:Normal,Stunting,Wasting',
+    ]);
+
+    $balita = DB::table('keterangan_balita')->where('id', $id)->first();
+
+    if (!$balita) {
+        return redirect()->back()->with('error', 'Data balita tidak ditemukan.');
+    }
+
+    DB::table('keterangan_balita')
+        ->where('id', $id)
+        ->update([
+            'nama_balita' => $request->nama_balita,
+            'usia' => $request->usia,
+            'alamat' => $request->alamat,
+            'status' => $request->status,
+            'updated_at' => now(),
+        ]);
+
+    return redirect()->back()->with('success', 'Data balita berhasil diperbarui.');
+}
 }

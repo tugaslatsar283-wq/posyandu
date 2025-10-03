@@ -32,7 +32,7 @@
                     <th>Jumlah Posyandu</th>
                     <th>Jumlah Kader</th>
                     <th>Tanggal Input</th>
-                    <th style="width: 100px;">Aksi</th>
+                    <th style="width: 200px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,15 +43,22 @@
                         <td>{{ $posyandu->jumlah_kader }}</td>
                         <td>{{ $posyandu->created_at->format('d/m/Y') }}</td>
                         <td>
+    <button class="btn btn-warning btn-sm me-1" 
+            data-bs-toggle="modal" 
+            data-bs-target="#editModal{{ $posyandu->id }}">
+        <i class="fas fa-edit"></i>Edit
+    </button>
 
-                            <form action="{{ route('posyandu.destroy', $posyandu->id) }}" method="POST" onsubmit="return confirm('Yakin hapus data?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
-                            </form>
-                        </td>
+    <form action="{{ route('posyandus.destroy', $posyandu->id) }}" 
+          method="POST" 
+          class="d-inline" 
+          onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+        @csrf
+        @method('DELETE')
+        <button class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i> Hapus</button>
+    </form>
+</td>
                     </tr>
                 @empty
                     <tr>
@@ -62,7 +69,6 @@
         </table>
     </div>
 </div>
-
 
    {{-- Data Gizi Balita --}}
 <div class="card shadow-sm">
@@ -100,8 +106,8 @@
                     <th>Stunting</th>
                     <th>Total Balita</th>
                      <th>Keterangan</th>
-                    <th>Tanggal Input</th>
-                    <th style="width: 100px;">Aksi</th>
+                    <th >Tanggal Input</th>
+                    <th style="width: 250px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -112,21 +118,31 @@
                         <td>{{ $gizi->jumlah_balita_wasting }}</td>
                         <td>{{ $gizi->jumlah_balita_stunting }}</td>
                         <td>{{ $gizi->jumlah_balita_normal + $gizi->jumlah_balita_wasting + $gizi->jumlah_balita_stunting }}</td>
-                        <td><a href="{{ route('keterangan_balita.index', $gizi->id) }}" class="btn btn-sm btn-info">
-        Keterangan
-    </a>
-                    </a></td>
+                        <td>
+                          <a href="{{ route('keterangan_balita.index', $gizi->id) }}" 
+   class="btn btn-sm btn-info">
+   Keterangan
+</a>
+                  
+                  </td>
                          <td>{{ $gizi->created_at->format('d/m/Y') }}</td>
                         <td>
+<button class="btn btn-warning btn-sm me-1" 
+            data-bs-toggle="modal" 
+            data-bs-target="#editGiziModal{{ $gizi->id }}">
+        <i class="fas fa-edit"></i>Edit
+    </button>
 
-                        
-                            <form action="{{ route('gizi.destroy', $gizi->id) }}" method="POST" onsubmit="return confirm('Yakin hapus data?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
-                            </form>
+    <form action="{{ route('gizi.destroy', $gizi->id) }}" 
+          method="POST" 
+          class="d-inline" 
+          onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+        @csrf
+        @method('DELETE')
+        <button class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i> Hapus</button>
+    </form>
+
                         </td>
                     </tr>
                 @empty
@@ -199,3 +215,76 @@
 </div>
 
 @endsection
+
+@foreach($dataPosyandu as $posyandu)
+<div class="modal fade" id="editModal{{ $posyandu->id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="{{ route('posyandus.update', $posyandu->id) }}" method="POST" class="modal-content">
+      @csrf
+      @method('PUT')
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Data Posyandu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+          <div class="mb-3">
+              <label class="form-label">Jumlah Posyandu</label>
+              <input type="number" name="jumlah_posyandu" class="form-control" 
+                     value="{{ $posyandu->jumlah_posyandu }}" required>
+          </div>
+          <div class="mb-3">
+              <label class="form-label">Jumlah Kader</label>
+              <input type="number" name="jumlah_kader" class="form-control" 
+                     value="{{ $posyandu->jumlah_kader }}" required>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+      </div>
+    </form>
+  </div>
+</div>
+@endforeach
+
+@foreach($dataGizi as $gizi)
+<div class="modal fade" id="editGiziModal{{ $gizi->id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="{{ route('gizi.update', $gizi->id) }}" method="POST" class="modal-content">
+      @csrf
+      @method('PUT')
+
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Data Gizi Balita</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+          <div class="mb-3">
+              <label class="form-label">Balita Normal</label>
+              <input type="number" name="jumlah_balita_normal" class="form-control" 
+                     value="{{ $gizi->jumlah_balita_normal }}" required>
+          </div>
+
+          <div class="mb-3">
+              <label class="form-label">Balita Wasting</label>
+              <input type="number" name="jumlah_balita_wasting" class="form-control" 
+                     value="{{ $gizi->jumlah_balita_wasting }}" required>
+          </div>
+
+          <div class="mb-3">
+              <label class="form-label">Balita Stunting</label>
+              <input type="number" name="jumlah_balita_stunting" class="form-control" 
+                     value="{{ $gizi->jumlah_balita_stunting }}" required>
+          </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-success">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+@endforeach
+

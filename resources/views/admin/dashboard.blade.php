@@ -33,6 +33,7 @@
             <table class="table table-striped table-bordered mb-0">
                 <thead class="table-dark text-center">
                     <tr>
+                        <th>NO</th>
                         <th>Nama Desa</th>
                         <th>Jumlah Posyandu</th>
                         <th>Jumlah Kader</th>
@@ -44,8 +45,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($rekap as $desa)
+                    @forelse($rekap as $i => $desa)
                         <tr class="text-center">
+                            <td>{{ $i + 1 }}</td>
                             <td class="text-start">{{ $desa->nama_desa }}</td>
                             <td>{{ $desa->jumlah_posyandu }}</td>
                             <td>{{ $desa->jumlah_kader }}</td>

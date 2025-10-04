@@ -45,20 +45,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($rekap as $i => $desa)
+                    @forelse($rekap as $i => $gizi)
                         <tr class="text-center">
                             <td>{{ $i + 1 }}</td>
-                            <td class="text-start">{{ $desa->nama_desa }}</td>
-                            <td>{{ $desa->jumlah_posyandu }}</td>
-                            <td>{{ $desa->jumlah_kader }}</td>
-                            <td>{{ $desa->balita_normal }}</td>
-                            <td> {{ $desa->balita_wasting }}</td>
-                            <td>{{ $desa->balita_stunting }}</td>
-                            <td>{{ $desa->total_balita }}</td>
-                            <td> <a href="{{ route('admin.keterangan_balita.index', [$desa->id, request('bulan')]) }}" 
-       class="btn btn-sm btn-info">
-        Keterangan Balita
-    </a>
+                            <td class="text-start">{{ $gizi->nama_desa }}</td>
+                            <td>{{ $gizi->jumlah_posyandu }}</td>
+                            <td>{{ $gizi->jumlah_kader }}</td>
+                            <td>{{ $gizi->balita_normal }}</td>
+                            <td> {{ $gizi->balita_wasting }}</td>
+                            <td>{{ $gizi->balita_stunting }}</td>
+                            <td>{{ $gizi->total_balita }}</td>
+                            <td> <a href="{{ route('admin.kecamatan.keterangan_balita.index', $gizi->id) }}" 
+   class="btn btn-sm btn-info">
+    Keterangan Balita
+</a>
+
 </td>
                         </tr>
                     @empty
@@ -72,3 +73,4 @@
     </div>
 </div>
 @endsection
+

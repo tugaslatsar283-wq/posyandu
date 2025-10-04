@@ -66,18 +66,26 @@ Route::get('/gizi/chart-data-all-desa', [DashboardController::class, 'giziChartD
 
 // ================= KETERANGAN BALITA =================
 Route::middleware(['auth'])->group(function () {
+    // Operator/Admin Desa -> lihat berdasarkan gizi_id
     Route::get('/keterangan-balita/{gizi}', [KeteranganBalitaController::class, 'index'])
         ->name('keterangan_balita.index');
     Route::post('/keterangan-balita', [KeteranganBalitaController::class, 'store'])
         ->name('keterangan_balita.store');
+    Route::put('/keterangan-balita/{id}', [KeteranganBalitaController::class, 'update'])
+        ->name('keterangan_balita.update');
     Route::delete('/keterangan-balita/{id}', [KeteranganBalitaController::class, 'destroy'])
         ->name('keterangan_balita.destroy');
 });
 
-// ================= KETERANGAN BALITA ADMIN (per desa + bulan) =================
+// ================= KETERANGAN BALITA ADMIN =================
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/keterangan-balita/{desa}/{bulan?}', [KeteranganBalitaController::class, 'adminIndex'])
-        ->name('admin.keterangan_balita.index');
+    // Admin Desa → filter berdasarkan desa_id
+Route::get('/admin/desa/keterangan-balita/{desa}/{bulan?}', [KeteranganBalitaController::class, 'adminIndex'])
+    ->name('admin.keterangan_balita.index');
+
+// Admin Kecamatan → filter berdasarkan gizi_id
+Route::get('/admin/kecamatan/keterangan-balita/{gizi}/{bulan?}', [KeteranganBalitaController::class, 'kecamatanIndex'])
+    ->name('admin.kecamatan.keterangan_balita.index');
 });
 
 require __DIR__.'/auth.php';

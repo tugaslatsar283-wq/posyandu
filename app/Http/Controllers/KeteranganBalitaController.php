@@ -11,25 +11,18 @@ use Illuminate\Support\Facades\DB;
 class KeteranganBalitaController extends Controller
 {
     // Tampilkan semua keterangan yang terhubung ke gizi_id tertentu
-    public function index($giziId)
-{
-    $gizi = Gizi::findOrFail($giziId);
+   public function index($giziId)
+    {
+        $gizi = Gizi::with('desa')->findOrFail($giziId);
 
-    // ambil desa_id dari user yang login
-    $desaId = auth()->user()->desa_id;
+        $data = KeteranganBalita::where('gizi_id', $giziId)->get();
 
-    // ambil data keterangan balita sesuai gizi_id DAN desa_id login
-    $data = KeteranganBalita::where('gizi_id', $giziId)
-                ->where('desa_id', $desaId)
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-    return view('keterangan_balita.index', [
-        'gizi' => $gizi,
-        'data' => $data,
-        'gizi_id' => $giziId
-    ]);
-}
+        return view('keterangan_balita.index', [
+            'gizi' => $gizi,
+            'data' => $data,
+            'gizi_id' => $giziId
+        ]);
+    }
 
     // Simpan keterangan baru (form mengirim gizi_id)
     public function store(Request $request)
@@ -68,28 +61,31 @@ class KeteranganBalitaController extends Controller
                          ->with('success', 'Data berhasil dihapus.');
     }
 
-    public function adminIndex($desaId, $bulan = null)
-    {
-        $query = DB::table('keterangan_balita')
-            ->join('desas', 'desas.id', '=', 'keterangan_balita.desa_id')
-            ->select(
-                'keterangan_balita.id',
-                'keterangan_balita.gizi_id',
-                'keterangan_balita.nama_balita',
-                'keterangan_balita.alamat',
-                'keterangan_balita.status',
-                'desas.nama_desa'
-            )
-            ->where('keterangan_balita.desa_id', $desaId);
+    public function adminIndex($giziId, $bulan = null)
+{
+    $gizi = Gizi::with('desa')->findOrFail($giziId);
 
-        if ($bulan) {
-            $query->whereRaw("DATE_FORMAT(keterangan_balita.created_at, '%Y-%m') = ?", [$bulan]);
-        }
+    $query = DB::table('keterangan_balita')
+        ->join('desas', 'desas.id', '=', 'keterangan_balita.desa_id')
+        ->select(
+            'keterangan_balita.id',
+            'keterangan_balita.gizi_id',
+            'keterangan_balita.nama_balita',
+            'keterangan_balita.usia',
+            'keterangan_balita.alamat',
+            'keterangan_balita.status',
+            'desas.nama_desa'
+        )
+        ->where('keterangan_balita.gizi_id', $giziId);
 
-        $data = $query->get();
-
-        return view('admin.keterangan', compact('data', 'bulan'));
+    if ($bulan) {
+        $query->whereRaw("DATE_FORMAT(keterangan_balita.created_at, '%Y-%m') = ?", [$bulan]);
     }
+
+    $data = $query->get();
+
+    return view('admin.keterangan', compact('data', 'gizi', 'bulan'));
+}
 
     public function update(Request $request, $id)
 {
@@ -118,4 +114,58 @@ class KeteranganBalitaController extends Controller
 
     return redirect()->back()->with('success', 'Data balita berhasil diperbarui.');
 }
+
+public function desaIndex($desaId, $bulan = null)
+    {
+        $query = DB::table('keterangan_balita')
+            ->join('desas', 'desas.id', '=', 'keterangan_balita.desa_id')
+            ->select(
+                'keterangan_balita.id',
+                'keterangan_balita.nama_balita',
+                'keterangan_balita.usia',
+                'keterangan_balita.alamat',
+                'keterangan_balita.status',
+                'desas.nama_desa'
+            )
+            ->where('keterangan_balita.desa_id', $desaId);
+
+        if ($bulan) {
+            $query->whereRaw("DATE_FORMAT(keterangan_balita.created_at, '%Y-%m') = ?", [$bulan]);
+        }
+
+        $data = $query->get();
+
+        return view('keterangan_balita.index', compact('data', 'bulan'));
+    }
+
+    public function kecamatanIndex($giziId, $bulan = null)
+{
+    // Ambil data gizi berdasarkan id
+    $gizi = Gizi::findOrFail($giziId);
+
+    // Query data keterangan balita berdasarkan gizi_id
+    $query = DB::table('keterangan_balita')
+        ->join('desas', 'desas.id', '=', 'keterangan_balita.desa_id')
+        ->select(
+            'keterangan_balita.id',
+            'keterangan_balita.nama_balita',
+            'keterangan_balita.alamat',
+            'keterangan_balita.status',
+            'desas.nama_desa',
+            'keterangan_balita.created_at'
+        )
+        ->where('keterangan_balita.gizi_id', $giziId);
+
+    // Jika ada filter bulan
+    if ($bulan) {
+        $query->whereRaw("DATE_FORMAT(keterangan_balita.created_at, '%Y-%m') = ?", [$bulan]);
+    }
+
+    $data = $query->get();
+
+    // arahkan ke view admin/keterangan.blade.php
+    return view('admin.keterangan', compact('gizi', 'data', 'bulan'));
 }
+
+}
+
